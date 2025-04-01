@@ -18,8 +18,14 @@ jobs:
           repository: mtararujs/python-greetings
           path: python-greetings
 
-      - name: Install Python dependencies
-        run: pip3 install -r requirements.txt
+      - name: Set up Python Virtual Environment
+        run: python3 -m venv venv
+        working-directory: python-greetings
+
+      - name: Activate Virtual Environment & Install Dependencies
+        run: |
+          source venv/bin/activate
+          pip install -r requirements.txt
         working-directory: python-greetings
 
   deploy:
@@ -38,6 +44,16 @@ jobs:
         with:
           repository: mtararujs/python-greetings
           path: python-greetings
+
+      - name: Set up Python Virtual Environment
+        run: python3 -m venv venv
+        working-directory: python-greetings
+
+      - name: Activate Virtual Environment & Install Dependencies
+        run: |
+          source venv/bin/activate
+          pip install -r requirements.txt
+        working-directory: python-greetings
 
       - name: Stop existing service
         run: pm2 delete greetings-app-${{ matrix.environment }} || true
