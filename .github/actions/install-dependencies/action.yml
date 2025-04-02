@@ -1,30 +1,38 @@
-name: "Install Dependencies"
-description: "Set up Python Virtual Environment and install required libraries"
+name: "Install Python Dependencies"
+description: "Sets up Python Virtual Environment and installs dependencies, with caching"
+inputs:
+  repo-path:
+    description: "Path where the repository is located"
+    required: true
+  requirements-file:
+    description: "Path to the requirements.txt file"
+    required: true
+
 runs:
   using: composite
   steps:
     - name: Checkout Delivery Pipeline Repository
       uses: actions/checkout@v4
 
-    - name: Clone Python Greetings Repository
-      uses: actions/checkout@v4
+    - name: Cache Python virtual environment
+      uses: actions/cache@v3
       with:
-        repository: mtararujs/python-greetings
-        path: python-greetings
+        path: |
+          ${{ inputs.repo-path }}/venv
+        key: venv-${{ runner.os }}-${{ hashFiles('${{ inputs.repo-path }}/requirements.txt') }}
+        restore-keys: |
+          venv-${{ runner.os }}-
 
-    - name: Set up Python Virtual Environment
+    - name: Install Dependencies if Cache Miss
       run: |
         echo "Setting up Python Virtual Environment..."
-        python3 -m venv venv
-      working-directory: python-greetings
-      shell: bash
+        python3 -m venv ${{ inputs.repo-path }}/venv
+        source ${{ inputs.repo-path }}/venv/bin/activate
+        pip3 install -r ${{ inputs.repo-path }}/requirements.txt
+      working-directory: ${{ inputs.repo-path }}
+      if: steps.cache.outputs.cache-hit != 'true'
 
-    - name: Activate Virtual Environment & Install Dependencies
+    - name: Install Dependencies if Cache Hit
       run: |
-        echo "Installing all required dependencies..."
-        source venv/bin/activate
-        pip3 install -r requirements.txt
-        ls
-      working-directory: python-greetings
-      shell: bash
-
+        echo "Virtual Environment and dependencies already set up from cache."
+      if: steps.cache.outputs.cache-hit == 'true'
