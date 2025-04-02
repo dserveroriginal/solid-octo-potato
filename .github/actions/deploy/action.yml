@@ -28,6 +28,7 @@ runs:
 
     - name: Deploy application
       run: |
+        which python
         echo "Deploying application to ${{ inputs.environment }} environment..."
         pm2 start app.py --name greetings-app-${{ inputs.environment }} -- --port ${{ inputs.port }}
       working-directory: python-greetings
