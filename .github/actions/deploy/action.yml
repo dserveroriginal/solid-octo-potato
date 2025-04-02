@@ -21,7 +21,7 @@ runs:
 
     - name: Python check 
       run: |
-        which python  # Verify the Python executable path
+        which python3  # Verify the Python executable path
       working-directory: python-greetings
       shell: bash
 
