@@ -13,7 +13,9 @@ runs:
   using: composite
   steps:
     - name: Print Step Name
-      run: echo "Starting deployment to ${{ inputs.environment }}..."
+      run: |
+        echo "Starting deployment to ${{ inputs.environment }}..."
+        ls
       shell: bash
 
     - name: Clone Python Greetings Repository
