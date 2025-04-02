@@ -11,28 +11,27 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Checkout Delivery Pipeline Repository
-      uses: actions/checkout@v4
 
     - name: Cache Python virtual environment
+      id: cache-venv
       uses: actions/cache@v3
       with:
-        path: |
-          ${{ inputs.repo-path }}/venv
-        key: venv-${{ runner.os }}-${{ hashFiles('${{ inputs.repo-path }}/requirements.txt') }}
+        path: ${{ inputs.repo-path }}/venv
+        key: venv-${{ runner.os }}-${{ hashFiles(inputs.requirements-file) }}
         restore-keys: |
           venv-${{ runner.os }}-
 
     - name: Install Dependencies if Cache Miss
+      if: steps.cache-venv.outputs.cache-hit != 'true'
       run: |
         echo "Setting up Python Virtual Environment..."
         python3 -m venv ${{ inputs.repo-path }}/venv
         source ${{ inputs.repo-path }}/venv/bin/activate
-        pip3 install -r ${{ inputs.repo-path }}/requirements.txt
+        pip3 install -r ${{ inputs.requirements-file }}
       working-directory: ${{ inputs.repo-path }}
-      if: steps.cache.outputs.cache-hit != 'true'
+      shell: bash
 
     - name: Install Dependencies if Cache Hit
-      run: |
-        echo "Virtual Environment and dependencies already set up from cache."
-      if: steps.cache.outputs.cache-hit == 'true'
+      if: steps.cache-venv.outputs.cache-hit == 'true'
+      run: echo "Virtual Environment and dependencies already set up from cache."
+      shell: bash
