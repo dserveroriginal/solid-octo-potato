@@ -26,7 +26,8 @@ runs:
         echo "Virtual environment activated. Checking Python version..."
         which python3  # Verify the Python executable path
         python3 --version  # Optionally, check Python version to confirm
-        pip3 freeze  # Check the installed dependencies
+        ls
+        # pip3 freeze  # Check the installed dependencies
       working-directory: python-greetings
       shell: bash
 
