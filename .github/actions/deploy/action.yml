@@ -13,9 +13,7 @@ runs:
   using: composite
   steps:
     - name: Print Step Name
-      run: |
-        echo "Starting deployment to ${{ inputs.environment }}..."
-        ls
+      run: echo "Starting deployment to ${{ inputs.environment }}..."
       shell: bash
 
     - name: Clone Python Greetings Repository
@@ -23,6 +21,21 @@ runs:
       with:
         repository: mtararujs/python-greetings
         path: python-greetings
+
+    - name: Restore Cached Virtual Environment
+      uses: actions/cache@v3
+      with:
+        path: python-greetings/venv
+        key: venv-${{ runner.os }}-${{ github.run_id }}
+        restore-keys: |
+          venv-${{ runner.os }}-
+
+    - name: Activate Virtual Environment
+      run: |
+        echo "Activating virtual environment..."
+        source venv/bin/activate
+      working-directory: python-greetings
+      shell: bash
 
     - name: Stop Existing Service
       run: pm2 delete greetings-app-${{ inputs.environment }} || true
