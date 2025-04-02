@@ -21,8 +21,8 @@ runs:
 
     - name: Activate Virtual Environment & Verify Environment
       run: |
-        echo "Activating virtual environment..."
-        source venv/bin/activate
+        # echo "Activating virtual environment..."
+        # source venv/bin/activate
         echo "Virtual environment activated. Checking Python version..."
         which python  # Verify the Python executable path
         python --version  # Optionally, check Python version to confirm
