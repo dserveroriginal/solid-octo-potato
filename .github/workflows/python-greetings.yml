@@ -9,6 +9,9 @@ jobs:
   install-pip-deps:
     runs-on: self-hosted
     steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+       
       - uses: ./.github/actions/install-pip-deps
         with:
           repo-path: "python-greetings"
