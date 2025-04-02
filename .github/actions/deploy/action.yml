@@ -1,16 +1,16 @@
 name: "Deploy Application"
-description: "Deploy Python app with pm2"
-
+description: "Deploys Python Greetings application using pm2"
 inputs:
   environment:
+    description: "Target environment (dev, staging, preprod, prod)"
     required: true
   port:
+    description: "Port number for the application"
     required: true
-
 runs:
-  using: "composite"
+  using: composite
   steps:
-    - name: Checkout repository
+    - name: Checkout Delivery Pipeline Repository
       uses: actions/checkout@v4
 
     - name: Clone Python Greetings Repository
@@ -20,10 +20,15 @@ runs:
         path: python-greetings
 
     - name: Stop existing service
-      run: pm2 delete greetings-app-${{ inputs.environment }} || true
+      run: |
+        echo "Stopping existing service in ${{ inputs.environment }}..."
+        pm2 delete greetings-app-${{ inputs.environment }} || true
       working-directory: python-greetings
+      shell: bash
 
-    - name: Start service with pm2
-      run: pm2 start app.py --name greetings-app-${{ inputs.environment }} -- --port ${{ inputs.port }}
+    - name: Deploy application
+      run: |
+        echo "Deploying application to ${{ inputs.environment }} environment..."
+        pm2 start app.py --name greetings-app-${{ inputs.environment }} -- --port ${{ inputs.port }}
       working-directory: python-greetings
-
+      shell: bash

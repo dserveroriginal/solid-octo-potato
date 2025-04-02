@@ -1,0 +1,29 @@
+name: "Install Dependencies"
+description: "Set up Python Virtual Environment and install required libraries"
+runs:
+  using: composite
+  steps:
+    - name: Checkout Delivery Pipeline Repository
+      uses: actions/checkout@v4
+
+    - name: Clone Python Greetings Repository
+      uses: actions/checkout@v4
+      with:
+        repository: mtararujs/python-greetings
+        path: python-greetings
+
+    - name: Set up Python Virtual Environment
+      run: |
+        echo "Setting up Python Virtual Environment..."
+        python3 -m venv venv
+      working-directory: python-greetings
+      shell: bash
+
+    - name: Activate Virtual Environment & Install Dependencies
+      run: |
+        echo "Installing all required dependencies..."
+        source venv/bin/activate
+        pip3 install -r requirements.txt
+      working-directory: python-greetings
+      shell: bash
+

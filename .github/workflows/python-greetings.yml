@@ -9,81 +9,84 @@ jobs:
   install-pip-deps:
     runs-on: self-hosted
     steps:
-      - name: Checkout repository
+      - name: Checkout Delivery Pipeline Repository
         uses: actions/checkout@v4
+      
+      - name: Install Dependencies
+        uses: ./.github/actions/install-dependencies
 
-      - name: Clone Python Greetings Repository
-        uses: actions/checkout@v4
-        with:
-          repository: mtararujs/python-greetings
-          path: python-greetings
-
-      - name: Set up Python Virtual Environment
-        run: python3 -m venv venv
-        working-directory: python-greetings
-
-      - name: Activate Virtual Environment & Install Dependencies
-        run: |
-          source venv/bin/activate
-          pip install -r requirements.txt
-        working-directory: python-greetings
-
-  deploy:
+  deploy-to-dev:
     needs: install-pip-deps
-    strategy:
-      matrix:
-        environment: [dev, staging, preprod, prod]
-        port: [7001, 7002, 7003, 7004]
     runs-on: self-hosted
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Clone Python Greetings Repository
-        uses: actions/checkout@v4
+      - name: Deploy to Dev
+        uses: ./.github/actions/deploy
         with:
-          repository: mtararujs/python-greetings
-          path: python-greetings
+          environment: dev
+          port: 7001
 
-      - name: Set up Python Virtual Environment
-        run: python3 -m venv venv
-        working-directory: python-greetings
-
-      - name: Activate Virtual Environment & Install Dependencies
-        run: |
-          source venv/bin/activate
-          pip install -r requirements.txt
-        working-directory: python-greetings
-
-      - name: Stop existing service
-        run: pm2 delete greetings-app-${{ matrix.environment }} || true
-        working-directory: python-greetings
-
-      - name: Start service with pm2
-        run: pm2 start app.py --name greetings-app-${{ matrix.environment }} -- --port ${{ matrix.port }}
-        working-directory: python-greetings
-
-  tests:
-    needs: deploy
-    strategy:
-      matrix:
-        environment: [dev, staging, preprod, prod]
+  tests-on-dev:
+    needs: deploy-to-dev
     runs-on: self-hosted
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Clone JS API Framework Repository
-        uses: actions/checkout@v4
+      - name: Run Tests on Dev
+        uses: ./.github/actions/run-tests
         with:
-          repository: mtararujs/course-js-api-framework
-          path: course-js-api-framework
+          environment: dev
 
-      - name: Install npm dependencies
-        run: npm install
-        working-directory: course-js-api-framework
+  deploy-to-staging:
+    needs: tests-on-dev
+    runs-on: self-hosted
+    steps:
+      - name: Deploy to Staging
+        uses: ./.github/actions/deploy
+        with:
+          environment: staging
+          port: 7002
 
-      - name: Run API Tests
-        run: npm run greetings greetings_${{ matrix.environment }}
-        working-directory: course-js-api-framework
+  tests-on-staging:
+    needs: deploy-to-staging
+    runs-on: self-hosted
+    steps:
+      - name: Run Tests on Staging
+        uses: ./.github/actions/run-tests
+        with:
+          environment: staging
 
+  deploy-to-preprod:
+    needs: tests-on-staging
+    runs-on: self-hosted
+    steps:
+      - name: Deploy to Preprod
+        uses: ./.github/actions/deploy
+        with:
+          environment: preprod
+          port: 7003
+
+  tests-on-preprod:
+    needs: deploy-to-preprod
+    runs-on: self-hosted
+    steps:
+      - name: Run Tests on Preprod
+        uses: ./.github/actions/run-tests
+        with:
+          environment: preprod
+
+  deploy-to-prod:
+    needs: tests-on-preprod
+    runs-on: self-hosted
+    steps:
+      - name: Deploy to Prod
+        uses: ./.github/actions/deploy
+        with:
+          environment: prod
+          port: 7004
+
+  tests-on-prod:
+    needs: deploy-to-prod
+    runs-on: self-hosted
+    steps:
+      - name: Run Tests on Prod
+        uses: ./.github/actions/run-tests
+        with:
+          environment: prod
