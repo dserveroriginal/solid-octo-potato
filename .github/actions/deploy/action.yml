@@ -30,6 +30,13 @@ runs:
       working-directory: python-greetings
       shell: bash
 
+    - name: Activate Virtual Environment & Verify Environment
+      run: |
+        which python  # Verify the Python executable path
+      working-directory: python-greetings
+      shell: bash
+
+
     - name: Stop existing service
       run: |
         echo "Stopping existing service in ${{ inputs.environment }}..."
