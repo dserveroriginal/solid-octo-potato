@@ -19,6 +19,13 @@ runs:
         repository: mtararujs/python-greetings
         path: python-greetings
 
+    - name: Python check 
+      run: |
+        which python  # Verify the Python executable path
+      working-directory: python-greetings
+      shell: bash
+
+
     - name: Activate Virtual Environment & Verify Environment
       run: |
         # echo "Activating virtual environment..."
@@ -27,12 +34,6 @@ runs:
         which python  # Verify the Python executable path
         python --version  # Optionally, check Python version to confirm
         pip freeze  # Check the installed dependencies
-      working-directory: python-greetings
-      shell: bash
-
-    - name: Activate Virtual Environment & Verify Environment
-      run: |
-        which python  # Verify the Python executable path
       working-directory: python-greetings
       shell: bash
 
