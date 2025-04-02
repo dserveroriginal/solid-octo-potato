@@ -1,37 +1,38 @@
-name: "Install Python Dependencies"
-description: "Sets up Python Virtual Environment and installs dependencies, with caching"
-inputs:
-  repo-path:
-    description: "Path where the repository is located"
-    required: true
-  requirements-file:
-    description: "Path to the requirements.txt file"
-    required: true
+name: "Install Dependencies"
+description: "Set up Python environment and install dependencies"
 
 runs:
   using: composite
   steps:
+    - name: Print Step Name
+      run: echo "Installing Python dependencies..."
+      shell: bash
 
-    - name: Cache Python virtual environment
-      id: cache-venv
+    - name: Clone Python Greetings Repository
+      uses: actions/checkout@v4
+      with:
+        repository: mtararujs/python-greetings
+        path: python-greetings
+
+    - name: Set up Python Virtual Environment
+      run: |
+        echo "Creating virtual environment..."
+        python3 -m venv venv
+      working-directory: python-greetings
+      shell: bash
+
+    - name: Activate Virtual Environment & Install Dependencies
+      run: |
+        echo "Installing dependencies..."
+        source venv/bin/activate
+        pip3 install -r requirements.txt
+      working-directory: python-greetings
+      shell: bash
+
+    - name: Cache Virtual Environment
       uses: actions/cache@v3
       with:
-        path: ${{ inputs.repo-path }}/venv
-        key: venv-${{ runner.os }}-${{ hashFiles(inputs.requirements-file) }}
+        path: python-greetings/venv
+        key: venv-${{ runner.os }}-${{ github.run_id }}
         restore-keys: |
           venv-${{ runner.os }}-
-
-    - name: Install Dependencies if Cache Miss
-      if: steps.cache-venv.outputs.cache-hit != 'true'
-      run: |
-        echo "Setting up Python Virtual Environment..."
-        python3 -m venv ${{ inputs.repo-path }}/venv
-        source ${{ inputs.repo-path }}/venv/bin/activate
-        pip3 install -r ${{ inputs.requirements-file }}
-      working-directory: ${{ inputs.repo-path }}
-      shell: bash
-
-    - name: Install Dependencies if Cache Hit
-      if: steps.cache-venv.outputs.cache-hit == 'true'
-      run: echo "Virtual Environment and dependencies already set up from cache."
-      shell: bash

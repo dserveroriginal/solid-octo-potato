@@ -9,18 +9,16 @@ jobs:
   install-pip-deps:
     runs-on: self-hosted
     steps:
-      - name: Checkout Repository
+      - name: Checkout Delivery Pipeline Repository
         uses: actions/checkout@v4
-       
       - uses: ./.github/actions/install-pip-deps
-        with:
-          repo-path: "python-greetings"
-          requirements-file: "python-greetings/requirements.txt"
 
   deploy-to-dev:
     needs: install-pip-deps
     runs-on: self-hosted
     steps:
+      - name: Checkout Delivery Pipeline Repository
+        uses: actions/checkout@v4
       - uses: ./.github/actions/deploy
         with:
           environment: "dev"
@@ -38,6 +36,8 @@ jobs:
     needs: tests-on-dev
     runs-on: self-hosted
     steps:
+      - name: Checkout Delivery Pipeline Repository
+        uses: actions/checkout@v4
       - uses: ./.github/actions/deploy
         with:
           environment: "staging"
@@ -55,6 +55,8 @@ jobs:
     needs: tests-on-staging
     runs-on: self-hosted
     steps:
+      - name: Checkout Delivery Pipeline Repository
+        uses: actions/checkout@v4
       - uses: ./.github/actions/deploy
         with:
           environment: "preprod"
@@ -72,6 +74,8 @@ jobs:
     needs: tests-on-preprod
     runs-on: self-hosted
     steps:
+      - name: Checkout Delivery Pipeline Repository
+        uses: actions/checkout@v4
       - uses: ./.github/actions/deploy
         with:
           environment: "prod"
