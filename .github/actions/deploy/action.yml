@@ -34,6 +34,7 @@ runs:
       run: |
         echo "Activating virtual environment..."
         source venv/bin/activate
+        pip3 freeze --local
       working-directory: python-greetings
       shell: bash
 
