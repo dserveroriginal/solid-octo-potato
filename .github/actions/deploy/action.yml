@@ -46,6 +46,6 @@ runs:
     - name: Deploy Application
       run: |
         echo "Deploying to ${{ inputs.environment }} on port ${{ inputs.port }}..."
-        pm2 start app.py --name greetings-app-${{ inputs.environment }} -- --port ${{ inputs.port }}
+        pm2 start app.py --name greetings-app-${{ inputs.environment }} -- --port ${{ inputs.port }} --interpreter venv/bin/python3
       working-directory: python-greetings
       shell: bash
