@@ -9,84 +9,99 @@ jobs:
   install-pip-deps:
     runs-on: self-hosted
     steps:
-      - name: Checkout Delivery Pipeline Repository
+      - name: Checkout Repository
         uses: actions/checkout@v4
-      
-      - name: Install Dependencies
-        uses: ./.github/actions/install-dependencies
+
+      - uses: ./.github/actions/install-dependencies
 
   deploy-to-dev:
     needs: install-pip-deps
     runs-on: self-hosted
     steps:
-      - name: Deploy to Dev
-        uses: ./.github/actions/deploy
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - uses: ./.github/actions/deploy
         with:
-          environment: dev
-          port: 7001
+          environment: "dev"
+          port: "7001"
 
   tests-on-dev:
     needs: deploy-to-dev
     runs-on: self-hosted
     steps:
-      - name: Run Tests on Dev
-        uses: ./.github/actions/run-tests
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - uses: ./.github/actions/test
         with:
-          environment: dev
+          environment: "dev"
 
   deploy-to-staging:
     needs: tests-on-dev
     runs-on: self-hosted
     steps:
-      - name: Deploy to Staging
-        uses: ./.github/actions/deploy
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - uses: ./.github/actions/deploy
         with:
-          environment: staging
-          port: 7002
+          environment: "staging"
+          port: "7002"
 
   tests-on-staging:
     needs: deploy-to-staging
     runs-on: self-hosted
     steps:
-      - name: Run Tests on Staging
-        uses: ./.github/actions/run-tests
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - uses: ./.github/actions/test
         with:
-          environment: staging
+          environment: "staging"
 
   deploy-to-preprod:
     needs: tests-on-staging
     runs-on: self-hosted
     steps:
-      - name: Deploy to Preprod
-        uses: ./.github/actions/deploy
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - uses: ./.github/actions/deploy
         with:
-          environment: preprod
-          port: 7003
+          environment: "preprod"
+          port: "7003"
 
   tests-on-preprod:
     needs: deploy-to-preprod
     runs-on: self-hosted
     steps:
-      - name: Run Tests on Preprod
-        uses: ./.github/actions/run-tests
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - uses: ./.github/actions/test
         with:
-          environment: preprod
+          environment: "preprod"
 
   deploy-to-prod:
     needs: tests-on-preprod
     runs-on: self-hosted
     steps:
-      - name: Deploy to Prod
-        uses: ./.github/actions/deploy
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - uses: ./.github/actions/deploy
         with:
-          environment: prod
-          port: 7004
+          environment: "prod"
+          port: "7004"
 
   tests-on-prod:
     needs: deploy-to-prod
     runs-on: self-hosted
     steps:
-      - name: Run Tests on Prod
-        uses: ./.github/actions/run-tests
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - uses: ./.github/actions/test
         with:
-          environment: prod
+          environment: "prod"
